@@ -8,9 +8,28 @@ executable nix-store-gc-extra
     default-language: GHC2021
     default-extensions:
         BlockArguments,
-        LambdaCase
+        DerivingStrategies,
+        DuplicateRecordFields,
+        OverloadedRecordDot,
+        LambdaCase,
+        DataKinds,
+        GADTs,
+        ExplicitNamespaces
     ghc-options: -Wall -Wextra -Wno-name-shadowing -threaded
     build-depends:
         base,
+        optparse-applicative,
+        process,
+        bytestring,
+        template-haskell,
+        time,
+        unix,
+        vector,
+        async,
+        unordered-containers,
+        cleff,
+        dlist,
     hs-source-dirs: src
     main-is: Main.hs
+    other-modules:
+        Nix.Store.GC.Extra.Paths
