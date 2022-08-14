@@ -1,0 +1,16 @@
+cabal-version: 2.4
+name: nix-store-gc-extra
+version: 0
+author: Ole Krüger
+maintainer: projects@vprsm.de
+
+executable nix-store-gc-extra
+    default-language: GHC2021
+    default-extensions:
+        BlockArguments,
+        LambdaCase
+    ghc-options: -Wall -Wextra -Wno-name-shadowing -threaded
+    build-depends:
+        base,
+    hs-source-dirs: src
+    main-is: Main.hs
