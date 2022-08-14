@@ -16,6 +16,7 @@ import Data.Time.Clock qualified as Clock
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Data.Traversable (for)
 import Nix.Store.GC.Extra.Paths qualified as Paths
+import Options.Applicative qualified as Options
 import System.Posix.Files qualified as Files
 import System.Process qualified as Process
 
@@ -186,13 +187,33 @@ program path = do
     _ <- deleteStorePaths [path]
     pure ()
 
+data Options = Options
+  {maxAge :: Clock.NominalDiffTime}
+  deriving stock (Show, Eq, Ord)
+
+optionsInfo :: Options.ParserInfo Options
+optionsInfo =
+  Options.info (Options.helper <*> parser) mempty
+  where
+    parser = Options <$> ageOption
+
+    ageOption =
+      fmap fromInteger $
+        Options.option Options.auto $
+          mconcat
+            [ Options.long "delete-older-than"
+            , Options.short 'd'
+            , Options.help "Delete paths older than this (age in seconds)"
+            ]
+
 main :: IO ()
 main = do
+  options <- Options.execParser optionsInfo
   paths <- listDeadPaths
   _ <-
     Cleff.runIOE $
       State.runState (mempty @(HashSet.HashSet FilePath)) $
-        interpretAge (60) $
+        interpretAge options.maxAge $
           interpretNixStore $
             for_ paths program
   pure ()
